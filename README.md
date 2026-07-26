@@ -1,0 +1,2 @@
+# TrainingFrontEnd
+フロントエンドのトレーニング用のリポジトリ
