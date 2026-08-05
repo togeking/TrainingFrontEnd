@@ -19,18 +19,21 @@
               <div class="col-md-6">
                 <label for="userNameInput" class="form-label">社員名 <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" id="userNameInput" placeholder="マツダ 太郎" required>
+                <div class="invalid-feedback" id="userNameError"></div>
               </div>
               <div class="col-md-3">
                 <label for="birthdayInput" class="form-label">誕生日 <span class="text-danger">*</span></label>
                 <input type="date" class="form-control" id="birthdayInput" required>
+                <div class="invalid-feedback" id="birthdayError"></div>
               </div>
               <div class="col-md-3">
                 <label for="ageInput" class="form-label">年齢 <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="ageInput" placeholder="30" required>
+                <div class="invalid-feedback" id="ageError"></div>
               </div>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3" id="genderGroup">
               <label class="form-label">性別 <span class="text-danger">*</span></label>
               <div class="d-flex gap-3">
                 <div class="form-check">
@@ -46,6 +49,7 @@
                   <label class="form-check-label" for="otherRadio">その他</label>
                 </div>
               </div>
+              <div class="text-danger small mt-1" id="genderError"></div>
             </div>
 
             <div class="row g-3 mb-3">
@@ -57,6 +61,7 @@
                   <option value="B部門">B部門</option>
                   <option value="C部門">C部門</option>
                 </select>
+                <div class="invalid-feedback" id="departmentError"></div>
               </div>
               <div class="col-md-6">
                 <label for="relatedDepartmentSelect" class="form-label">関連部門</label>
@@ -65,6 +70,7 @@
                   <option value="B部門">B部門</option>
                   <option value="C部門">C部門</option>
                 </select>
+                <div class="invalid-feedback" id="relatedDepartmentError"></div>
               </div>
             </div>
 
@@ -83,6 +89,7 @@
             <div class="mb-4">
               <label for="fileInput" class="form-label">ファイルアップロード <span class="text-danger">*</span></label>
               <input class="form-control" type="file" id="fileInput" required>
+              <div class="invalid-feedback" id="fileError"></div>
             </div>
 
             <div class="d-flex gap-2 justify-content-end">

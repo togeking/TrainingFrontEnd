@@ -19,8 +19,19 @@ function addEventListeners() {
         event.preventDefault();
         if (validateForm()) {
             // NOTE: 課題3にて、登録確認モーダルを表示するが、今は処理を行わない。
+            alert("バリデーション成功！");
         }
     });
+
+    // 入力中・変更時にそのフィールドだけ再バリデーション
+    document.getElementById("userNameInput").addEventListener("input", validateUserName);
+    document.getElementById("birthdayInput").addEventListener("change", validateBirthDay);
+    document.getElementById("ageInput").addEventListener("input", validateAge);
+    document.getElementsByName("genderRadio").forEach(radio => {
+        radio.addEventListener("change", validateGender);
+    });
+    document.getElementById("departmentSelect").addEventListener("change", validateDepartment);
+    document.getElementById("relatedDepartmentSelect").addEventListener("change", validateRelatedDepartment);
 }
 
 
@@ -55,15 +66,19 @@ function validateForm() {
  * @return {boolean} エラーメッセージ。エラーがない場合はundefinedを返す。
  */
 function validateUserName() {
-    const userNameInput = document.getElementById("userNameInput");
-    if (userNameInput.value.trim() === "") {
+    const inputEl = document.getElementById("userNameInput");
+    const errorEl = document.getElementById("userNameError");
+    if (inputEl.value.trim() === "") {
+        showFieldError(inputEl, errorEl, "ユーザー名を入力してください。");
         return false;
     }
 
-    if (userNameInput.value.length > 20) {
+    if (inputEl.value.length > 20) {
+        showFieldError(inputEl, errorEl, "ユーザー名は20文字以内で入力してください。");
         return false;
     }
 
+    clearFieldError(inputEl, errorEl);
     return true;
 }
 
@@ -73,16 +88,20 @@ function validateUserName() {
  * @return {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
  */
 function validateBirthDay() {
-    const birthDateInput = document.getElementById("birthdayInput");
-    if (birthDateInput.value.trim() === "") {
+    const inputEl = document.getElementById("birthdayInput");
+    const errorEl = document.getElementById("birthdayError");
+    if (inputEl.value.trim() === "") {
+        showFieldError(inputEl, errorEl, "生年月日を入力してください。");
         return false;
     }
 
-    const birthDate = new Date(birthDateInput.value);
+    const birthDate = new Date(inputEl.value);
     const today = new Date();
     if (birthDate > today) {
+        showFieldError(inputEl, errorEl, "生年月日は今日以前の日付を入力してください。");
         return false;
     }
+    clearFieldError(inputEl, errorEl);
     return true;
 }
 
@@ -92,16 +111,21 @@ function validateBirthDay() {
  * @returns {boolean} エラーはない場合はtrue、エラー時はfalseを返す。
  */
 function validateAge() {
-    const ageInput = document.getElementById("ageInput");
-    if (ageInput.value.trim() === "") {
+    const inputEl = document.getElementById("ageInput");
+    const errorEl = document.getElementById("ageError");
+    if (inputEl.value.trim() === "") {
+        showFieldError(inputEl, errorEl, "年齢は必ず入力してください。");
         return false;
     }
-    if (isNaN(Number(ageInput.value))) {
+    if (isNaN(Number(inputEl.value))) {
+        showFieldError(inputEl, errorEl, "数値以外の値は入力しないでください。");
         return false;
     }
-    if (Number(ageInput.value) < 0) {
+    if (Number(inputEl.value) < 0) {
+        showFieldError(inputEl, errorEl, "0以下の値は無効です。");
         return false;
     }
+    clearFieldError(inputEl, errorEl);
     return true;
 }
 
@@ -111,13 +135,17 @@ function validateAge() {
  * @returns {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
  */
 function validateGender() {
-    const genderRadioButtons = document.getElementsByName("genderRadio");
-    for (let i = 0; i < genderRadioButtons.length; i++) {
-        if (genderRadioButtons[i].checked) {
-            return true;
-        }
+    const radios = document.getElementsByName("genderRadio");
+    const errorEl = document.getElementById("genderError");
+
+    const isChecked = Array.from(radios).some(r => r.checked);
+    if (!isChecked) {
+        errorEl.textContent = "性別を選択してください。";
+        return false;
     }
-    return false;
+
+    errorEl.textContent = ""; // クリア
+    return true;
 }
 
 /**
@@ -126,10 +154,13 @@ function validateGender() {
  * @returns {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
  */
 function validateDepartment() {
-    const departmentSelect = document.getElementById("departmentSelect");
-    if (departmentSelect.value === "") {
+    const inputEl = document.getElementById("departmentSelect");
+    const errorEl = document.getElementById("departmentError");
+    if (inputEl.value === "") {
+        showFieldError(inputEl, errorEl, "部門を選択してください。");
         return false;
     }
+    clearFieldError(inputEl, errorEl);
     return true;
 }
 
@@ -139,10 +170,13 @@ function validateDepartment() {
  * @returns {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
  */
 function validateRelatedDepartment() {
-    const relatedDepartmentSelect = document.getElementById("relatedDepartmentSelect");
-    if (relatedDepartmentSelect.value === "") {
+    const inputEl = document.getElementById("relatedDepartmentSelect");
+    const errorEl = document.getElementById("relatedDepartmentError");
+    if (inputEl.selectedOptions.length === 0) {
+        showFieldError(inputEl, errorEl, "関連部門を選択してください。");
         return false;
     }
+    clearFieldError(inputEl, errorEl);
     return true;
 }
 
@@ -154,22 +188,29 @@ function validateRelatedDepartment() {
 function validateUploadFile() {
     // 未選択、10kb以上のファイル、拡張子がtxt以外のファイルはエラーとする
     const fileInput = document.getElementById("fileInput");
+    const errorEl = document.getElementById("fileError");
     const file = fileInput.files[0];
     if (!file) {
+        showFieldError(fileInput, errorEl, "ファイルを選択してください。");
         return false;
     }
-    if (file.size > 10 * 1024) {
-        return false;
-    }
+
     const fileExtension = file.name.split(".").pop().toLowerCase();
     if (fileExtension !== "txt") {
+        showFieldError(fileInput, errorEl, "拡張子はtxtのみ有効です。");
         return false;
     }
+
+    if (file.size > 10 * 1024) {
+        showFieldError(fileInput, errorEl, "ファイルサイズは10kb以下にしてください。");
+        return false;
+    }
+    clearFieldError(fileInput, errorEl);
     return true;
 }
 
 // ========================================
-// UI制御（トースト表示）
+// UI制御
 // ========================================
 /**
  * エラーメッセージを受け取り、トーストを表示する関数
@@ -185,4 +226,16 @@ function showErrorToast(message) {
     // Bootstrapのトーストインスタンスを取得または生成して表示
     const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
     toast.show();
+}
+
+/** フォームにエラーを表示する */
+function showFieldError(inputEl, errorEl, message) {
+    inputEl.classList.add("is-invalid");
+    errorEl.textContent = message;
+}
+
+/** フォームのエラーをクリアする */
+function clearFieldError(inputEl, errorEl) {
+    inputEl.classList.remove("is-invalid");
+    errorEl.textContent = "";
 }
