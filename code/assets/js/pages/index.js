@@ -31,7 +31,11 @@ function validateForm() {
     const validationResults = [
         validateUserName(),
         validateBirthDay(),
-        validateAge()
+        validateAge(),
+        validateGender(),
+        validateDepartment(),
+        validateRelatedDepartment(),
+        validateUploadFile()
     ];
 
     const hasValidationError = validationResults.some(function(result) {
@@ -39,7 +43,7 @@ function validateForm() {
     });
 
     if (hasValidationError) {
-        showToast("バリデーションエラーが発生しました。\n入力フォームを確認してください。");
+        showErrorToast("バリデーションエラーが発生しました。\n入力フォームを確認してください。");
         return false;
     }
     return true;
@@ -101,15 +105,68 @@ function validateAge() {
     return true;
 }
 
-function validateGender() {}
+/**
+ * 性別がいずれか選択されているかを検証する関数
+ * @description 性別ラジオボタンのいずれかが選択されていることを確認する。
+ * @returns {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
+ */
+function validateGender() {
+    const genderRadioButtons = document.getElementsByName("genderRadio");
+    for (let i = 0; i < genderRadioButtons.length; i++) {
+        if (genderRadioButtons[i].checked) {
+            return true;
+        }
+    }
+    return false;
+}
 
-function validateDepartment() {}
+/**
+ * 部門が選択されているかを検証する関数
+ * @description 部門セレクトボックスで選択されていることを確認する。
+ * @returns {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
+ */
+function validateDepartment() {
+    const departmentSelect = document.getElementById("departmentSelect");
+    if (departmentSelect.value === "") {
+        return false;
+    }
+    return true;
+}
 
-function validateRelatedDepartment() {}
+/**
+ * 関連部門が選択されているかを検証する関数
+ * @description 関連部門セレクトボックスで選択されていることを確認する。1つも選択されていない場合はエラーとする。
+ * @returns {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
+ */
+function validateRelatedDepartment() {
+    const relatedDepartmentSelect = document.getElementById("relatedDepartmentSelect");
+    if (relatedDepartmentSelect.value === "") {
+        return false;
+    }
+    return true;
+}
 
-function validateContact() {}
-
-function validateUploadFile() {}
+/**
+ * アップロードファイルが有効かを検証する関数
+ * @description ファイルが選択されていること、10kb以下であること、拡張子がtxtであることを確認する。
+ * @returns {boolean} エラーがない場合はtrue、エラーがある場合はfalseを返す。
+ */
+function validateUploadFile() {
+    // 未選択、10kb以上のファイル、拡張子がtxt以外のファイルはエラーとする
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    if (!file) {
+        return false;
+    }
+    if (file.size > 10 * 1024) {
+        return false;
+    }
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+    if (fileExtension !== "txt") {
+        return false;
+    }
+    return true;
+}
 
 // ========================================
 // UI制御（トースト表示）
@@ -118,7 +175,7 @@ function validateUploadFile() {}
  * エラーメッセージを受け取り、トーストを表示する関数
  * @param {string} message 表示したいエラーメッセージ
  */
-function showToast(message) {
+function showErrorToast(message) {
     const toastElement = document.getElementById("errorToast");
     const toastBody = toastElement.querySelector(".toast-body");
     
