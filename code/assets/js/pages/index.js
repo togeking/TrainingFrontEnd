@@ -23,6 +23,8 @@ function addEventListeners() {
         }
     });
 
+    document.getElementById("cancelButton").addEventListener("click", handleCancelButton);
+
     // 入力中・変更時にそのフィールドだけ再バリデーション
     document.getElementById("userNameInput").addEventListener("input", validateUserName);
     document.getElementById("birthdayInput").addEventListener("change", validateBirthDay);
@@ -238,4 +240,22 @@ function showFieldError(inputEl, errorEl, message) {
 function clearFieldError(inputEl, errorEl) {
     inputEl.classList.remove("is-invalid");
     errorEl.textContent = "";
+}
+
+// ========================================
+// 登録・キャンセル
+// ========================================
+function handleCancelButton() {
+    const form = document.getElementById("userForm");
+    form.reset();
+
+    // is-invalid クラスをすべて除去
+    form.querySelectorAll(".is-invalid").forEach(el => {
+        el.classList.remove("is-invalid");
+    });
+
+    // エラーテキストをすべてクリア
+    form.querySelectorAll(".invalid-feedback, .text-danger").forEach(el => {
+        el.textContent = "";
+    });
 }
